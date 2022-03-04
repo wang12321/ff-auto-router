@@ -1,15 +1,33 @@
 {
   "name": "ff-auto-router",
-  "version": "1.9.0",
+  "version": "2.0.1",
   "description": "auto-router",
-  "author": "ff",
+  "author": "1396933943@qq.com",
   "dependencies": {
     "fast-glob": "^3.2.7",
     "prettier": "^2.3.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "husky": "~4.2.5",
+    "gulp-bump": "^3.2.0",
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^3.0.2"
+  },
   "files": [
     "lib"
+  ],
+  "scripts": {
+    "build": "gulp",
+    "node": "node node/openBrowser",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "脚手架",
+    "单页面脚手架",
+    "单页面",
+    "vue2",
+    "vueCli"
   ],
   "browserslist": [
     "> 1%",
@@ -19,5 +37,10 @@
     "node": ">=8.9",
     "npm": ">= 3.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-push": "node node/openBrowser"
+    }
+  }
 }

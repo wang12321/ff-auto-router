@@ -13,54 +13,54 @@ const prettier = require('prettier') // 处理文件格式
 
 // 定义一个自动路由插件类
 class AutoRouter {
-  constructor(options) {
-    // 接收传过来的参数
-    this.options = options
-  }
-  // 插件
-  apply(compiler) {
-    const generate = () => {
-      const code = generateRoutes(this.options)
-      let to
-      // 处理路由文件生成目录 默认与插件文件并级 如果配置routePath，那生成文件就是此路径下
-      if (this.options.routePath) {
-        to = path.join(process.cwd(), this.options.routePath)
-      } else {
-        to = path.join(__dirname, './routes.js')
-      }
-      // 以同步的方法检测目录是否存在。 如果目录存在 返回true,如果目录不存在 返回false 语法
-      // 读取文件信息 如果没有改变直接返回
-      if (fs.existsSync(to) &&
-          fs.readFileSync(to, 'utf8').trim() === code.trim()) {
-        return
-      }
-      fs.writeFileSync(to, code)
+    constructor(options) {
+        // 接收传过来的参数
+        this.options = options
     }
-    let watcher = null
-    // 设置完初始插件之后，执行插件。
-    compiler.hooks.afterPlugins.tap(pluginName, () => {
-      generate()
-    })
-    // 生成资源到 output 目录之前。
-    compiler.hooks.emit.tap(pluginName, () => {
-      // 监听文件变化的插件
-      // paths 一个字符串或者是一个数组，描述监听的文件或者文件夹的路径
-      // persistent 与原生fs.watch一样,表示是否保护进程不退出持久监听，默认值为true
-      const chokidar = require('chokidar')
-      watcher = chokidar.watch(path.join(process.cwd(), this.options.pages || 'src/views/**/*.vue'), {
-        persistent: true
-      }).on('change', () => {
-        generate()
-      })
-    })
-    // 监听模式停止。
-    compiler.hooks.watchClose.tap(pluginName, () => {
-      if (watcher) {
-        watcher.close()
-        watcher = null
-      }
-    })
-  }
+    // 插件
+    apply(compiler) {
+        const generate = () => {
+            const code = generateRoutes(this.options)
+            let to
+            // 处理路由文件生成目录 默认与插件文件并级 如果配置routePath，那生成文件就是此路径下
+            if (this.options.routePath) {
+                to = path.join(process.cwd(), this.options.routePath)
+            } else {
+                to = path.join(__dirname, './routes.js')
+            }
+            // 以同步的方法检测目录是否存在。 如果目录存在 返回true,如果目录不存在 返回false 语法
+            // 读取文件信息 如果没有改变直接返回
+            if (fs.existsSync(to) &&
+                fs.readFileSync(to, 'utf8').trim() === code.trim()) {
+                return
+            }
+            fs.writeFileSync(to, code)
+        }
+        let watcher = null
+        // 设置完初始插件之后，执行插件。
+        compiler.hooks.afterPlugins.tap(pluginName, () => {
+            generate()
+        })
+        // 生成资源到 output 目录之前。
+        compiler.hooks.emit.tap(pluginName, () => {
+            // 监听文件变化的插件
+            // paths 一个字符串或者是一个数组，描述监听的文件或者文件夹的路径
+            // persistent 与原生fs.watch一样,表示是否保护进程不退出持久监听，默认值为true
+            const chokidar = require('chokidar')
+            watcher = chokidar.watch(path.join(process.cwd(), this.options.pages || 'src/views/**/*.vue'), {
+                persistent: true
+            }).on('change', () => {
+                generate()
+            })
+        })
+        // 监听模式停止。
+        compiler.hooks.watchClose.tap(pluginName, () => {
+            if (watcher) {
+                watcher.close()
+                watcher = null
+            }
+        })
+    }
 }
 
 /**
@@ -72,32 +72,32 @@ class AutoRouter {
  * @returns {*}
  */
 function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', common = 'common' }) {
-  // 指定文件不需要生成路由配置
-  const patterns = ['**/*.vue', `!**/${common}/*.vue`]
-  // 获取所有需要路由配置的文件路径
-  const paths = fg.sync(patterns, {
-    cwd: pages,
-    onlyFiles: true
-  })
-  const pathArr = paths.map((path) => {
-    if (path.indexOf('/index.vue') > -1) {
-      return path.substring(0, path.indexOf('/index.vue'))
-    } else if (path.indexOf('.vue') > -1) {
-      return path.substring(0, path.indexOf('.vue'))
-    } else {
-      return path
-    }
-  })
-  //  将目录匹配生成路由json
-  const routerStr = pathMapToMeta({
-    routers: [],
-    pathArr: pathArr,
-    paths: paths,
-    pages: pages,
-    importPrefix: importPrefix
-  })
-  // 将json转换文件字符串
-  return createRoutes(routerStr)
+    // 指定文件不需要生成路由配置
+    const patterns = ['**/*.vue', `!**/${common}/*.vue`]
+    // 获取所有需要路由配置的文件路径
+    const paths = fg.sync(patterns, {
+        cwd: pages,
+        onlyFiles: true
+    })
+    const pathArr = paths.map((path) => {
+        if (path.indexOf('/index.vue') > -1) {
+            return path.substring(0, path.indexOf('/index.vue'))
+        } else if (path.indexOf('.vue') > -1) {
+            return path.substring(0, path.indexOf('.vue'))
+        } else {
+            return path
+        }
+    })
+    //  将目录匹配生成路由json
+    const routerStr = pathMapToMeta({
+        routers: [],
+        pathArr: pathArr,
+        paths: paths,
+        pages: pages,
+        importPrefix: importPrefix
+    })
+    // 将json转换文件字符串
+    return createRoutes(routerStr)
 }
 
 /**
@@ -107,8 +107,8 @@ function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', common
  */
 
 function createRoutes(routers) {
-  const code = routers.map(createRoute)
-  return prettier.format(`import Layout from '@/layout'\nexport default [\n
+    const code = routers.map(createRoute)
+    return prettier.format(`import Layout from '@/layout'\nexport default [\n
     {
     path: '/',
     component: Layout,
@@ -117,11 +117,11 @@ function createRoutes(routers) {
     \n]
     }
   \n]`, {
-    parser: 'babel',
-    semi: false,
-    singleQuote: true,
-    trailingComma: 'none' // 处理最后一行不加，的问题
-  })
+        parser: 'babel',
+        semi: false,
+        singleQuote: true,
+        trailingComma: 'none' // 处理最后一行不加，的问题
+    })
 }
 
 /**
@@ -131,7 +131,7 @@ function createRoutes(routers) {
  * @returns {string}
  */
 function createRoute(map, children = {}) {
-  return `\n{
+    return `\n{
       path:'${map.path}',
       name:'${map.name}',
       meta:${map.meta},
@@ -150,33 +150,33 @@ function createRoute(map, children = {}) {
  * @returns {*[]}
  */
 function pathMapToMeta({ routers = [], pathArr, paths, pages, importPrefix }) {
-  pathArr.forEach((rows, index) => {
-    const rowsArr = rows.split('/') || []
-    const row = (rowsArr && rowsArr.length > 0) ? rowsArr[rowsArr.length - 1] : ''
-    const item = paths[index] || ''
+    pathArr.forEach((rows, index) => {
+        const rowsArr = rows.split('/') || []
+        const row = (rowsArr && rowsArr.length > 0) ? rowsArr[rowsArr.length - 1] : ''
+        const item = paths[index] || ''
 
-    // 配置参数
-    const router = {
-      name: row,
-      path: (rows.indexOf('_id') > -1 ? (rows.indexOf('_id') === 0 ? rows.replace('_', ':') : rows.replace('_', '/:')) : rows),
-      component: importPrefix + '/' + item,
-      meta: `{ title: "${row}" }`
-    }
-    // 如果value有值，说明可以根据文件路径取meta信息
-    const file = fs.readFileSync(pages + '/' + item, 'utf8')
-    const metaArr = file.match(/\meta: {[^\{]+\}/g) || file.match(/\meta:{[^\{]+\}/g)
-    if (metaArr) {
-      const metaStr = metaArr[0]
-      // 匹配meta信息
-      let meta = ''
-      if (metaStr.indexOf('meta') > -1) {
-        meta = metaStr.substring(metaStr.indexOf('{'), metaStr.indexOf('}') + 1)
-      }
-      router.meta = meta
-    }
-    routers.push(router)
-  })
-  return routers
+        // 配置参数
+        const router = {
+            name: row,
+            path: (rows.indexOf('_id') > -1 ? (rows.indexOf('_id') === 0 ? rows.replace('_', ':') : rows.replace('_', '/:')) : rows),
+            component: importPrefix + '/' + item,
+            meta: `{ title: "${row}" }`
+        }
+        // 如果value有值，说明可以根据文件路径取meta信息
+        const file = fs.readFileSync(pages + '/' + item, 'utf8')
+        const metaArr = file.match(/\meta: {[^\{]+\}/g) || file.match(/\meta:{[^\{]+\}/g)
+        if (metaArr) {
+            const metaStr = metaArr[0]
+            // 匹配meta信息
+            let meta = ''
+            if (metaStr.indexOf('meta') > -1) {
+                meta = metaStr.substring(metaStr.indexOf('{'), metaStr.indexOf('}') + 1)
+            }
+            router.meta = meta
+        }
+        routers.push(router)
+    })
+    return routers
 }
 
 module.exports = AutoRouter
