@@ -1,6 +1,6 @@
 {
   "name": "ff-auto-router",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "auto-router",
   "author": "1396933943@qq.com",
   "dependencies": {
@@ -22,12 +22,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "cli",
-    "脚手架",
-    "单页面脚手架",
-    "单页面",
-    "vue2",
-    "vueCli"
+    "ff-auto-router",
+    "自动路由",
+    "路由",
+    "auto-router",
+    "router"
   ],
   "browserslist": [
     "> 1%",
