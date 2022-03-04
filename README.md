@@ -1,5 +1,13 @@
-# ff-auto-router 基于VueRouter自动化路由
 
+# 一、简介
+![https://www.npmjs.com/package/ff-auto-router](https://img.shields.io/npm/v/ff-auto-router)
+![https://www.npmjs.com/package/ff-auto-router](https://img.shields.io/npm/dt/ff-auto-router)
+![https://github.com/wang12321/ff-auto-router](https://img.shields.io/github/languages/code-size/wang12321/ff-auto-router)
+![https://github.com/wang12321/ff-auto-router](https://img.shields.io/github/issues-raw/wang12321/ff-auto-router)
+![https://github.com/wang12321/ff-auto-router](https://img.shields.io/github/license/wang12321/ff-auto-router)
+### ff-auto-router 基于VueRouter自动化路由
+
+# 二、使用方法
 ### 安装
 
 ```sh
@@ -60,6 +68,7 @@ const createRouter = () => new Router({
 
 ```
 
+# 三、版本信息
 1.3.0 升级
 新增移动自动路由生成
 引入
@@ -76,4 +85,5 @@ const autoRouter = require('ff-auto-router/lib/mobile-router-webpack-plugin')
 1.6.0 修复可以在common目录下建立文件夹。
 将排序扩大10倍，之后在1和2之间要加功能可以写1.1--1.9  暂时解决需要排序的时候去修改所以文件排序
 
-1.8.0  代码压缩版本
+#2.0.0 
+代码压缩版本，自动发布npm，之后只会备注大更新版本信息
