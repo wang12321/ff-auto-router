@@ -26,6 +26,7 @@ class AutoRouter {
             if (this.options.routePath) {
                 to = path.join(process.cwd(), this.options.routePath)
             } else {
+                console.log('routespath', path.join(__dirname, './routes.js'))
                 to = path.join(__dirname, './routes.js')
             }
             // 以同步的方法检测目录是否存在。 如果目录存在 返回true,如果目录不存在 返回false 语法
@@ -43,16 +44,21 @@ class AutoRouter {
         })
         // 生成资源到 output 目录之前。
         compiler.hooks.emit.tap(pluginName, () => {
+            console.log('process.env.NODE_ENV', process.env.NODE_ENV)
             // 监听文件变化的插件
             // paths 一个字符串或者是一个数组，描述监听的文件或者文件夹的路径
             // persistent 与原生fs.watch一样,表示是否保护进程不退出持久监听，默认值为true
-            const chokidar = require('chokidar')
-            watcher = chokidar.watch(path.join(process.cwd(), this.options.pages || 'src/views/**/*.vue'), {
-                persistent: true
-            }).on('change', () => {
-                generate()
-            })
+            if (process.env.NODE_ENV.indexOf('development') > -1) {
+                const chokidar = require('chokidar')
+                console.log('path', path.join(process.cwd(), this.options.pages || 'src/views/**/*.vue'))
+                watcher = chokidar.watch(path.join(process.cwd(), this.options.pages || 'src/views/**/*.vue'), {
+                    persistent: true
+                }).on('all', () => {
+                    generate()
+                })
+            }
         })
+
         // 监听模式停止。
         compiler.hooks.watchClose.tap(pluginName, () => {
             if (watcher) {
