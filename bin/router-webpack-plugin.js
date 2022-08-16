@@ -32,7 +32,7 @@ class AutoRouter {
             // 以同步的方法检测目录是否存在。 如果目录存在 返回true,如果目录不存在 返回false 语法
             // 读取文件信息 如果没有改变直接返回
             if (fs.existsSync(to) &&
-                fs.readFileSync(to, 'utf8').trim() === code.trim()) {
+              fs.readFileSync(to, 'utf8').trim() === code.trim()) {
                 return
             }
             fs.writeFileSync(to, code)
@@ -77,7 +77,7 @@ class AutoRouter {
  * @param common 过滤文件路径路径
  * @returns {*}
  */
-function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', layout = '_layout.vue', common = 'common' }) {
+function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', layout = '_layout.vue', common = 'common', isApiRouter = false }) {
     // 指定文件不需要生成路由配置
     const patterns = ['**/*.vue', `!**/${layout}`, `!**/${common}/*.vue`, `!**/${common}/**/*.vue`]
     // 获取所有layout的文件路径
@@ -115,7 +115,32 @@ function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', layout
         importPrefix: importPrefix
     })
     // 将json转换文件字符串
-    return createRoutes(routerStr)
+    return createRoutes(routerStr, isApiRouter)
+}
+
+/**
+ * 权限后台返回映射router地址
+ * @param data
+ * @param routerStr
+ * @returns {string}
+ */
+function routerUrl(data, routerStr = `Layout: () => import('@/layout/index'),`) {
+    data.forEach(item => {
+        routerStr += `'${item.name}': () => import('${item.component}'),
+    `
+        if (item.children) {
+            routerUrl(item.children, routerStr)
+        }
+    })
+    return routerStr
+}
+function routerMaps(routers) {
+    const urlCode = routerUrl(routers)
+    return `
+  export const routerMaps = {
+  ${urlCode}
+  }
+  `
 }
 
 /**
@@ -123,14 +148,31 @@ function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', layout
  * @param routers 路由json
  * @returns {*}
  */
-function createRoutes(routers) {
+function createRoutes(routers, isApiRouter) {
     const code = routers.map(createRoute)
+    let routerMapCode = ''
+    if (isApiRouter) {
+        routerMapCode = routerMaps(routers)
+        if (process.env.NODE_ENV.indexOf('production') > -1) {
+            return prettier.format(`${routerMapCode}`, {
+                parser: 'babel',
+                semi: false,
+                singleQuote: true,
+                printWidth: 500,
+                trailingComma: 'none' // 处理最后一行不加，的问题
+            })
+        }
+    }
+
     return prettier.format(`import Layout from '@/layout'\nexport default [\n
     ${code}
-  \n]`, {
+  \n]
+  ${routerMapCode}
+  `, {
         parser: 'babel',
         semi: false,
         singleQuote: true,
+        printWidth: 500,
         trailingComma: 'none' // 处理最后一行不加，的问题
     })
 }
