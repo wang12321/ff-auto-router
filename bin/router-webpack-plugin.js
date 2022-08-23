@@ -32,7 +32,7 @@ class AutoRouter {
             // 以同步的方法检测目录是否存在。 如果目录存在 返回true,如果目录不存在 返回false 语法
             // 读取文件信息 如果没有改变直接返回
             if (fs.existsSync(to) &&
-              fs.readFileSync(to, 'utf8').trim() === code.trim()) {
+                fs.readFileSync(to, 'utf8').trim() === code.trim()) {
                 return
             }
             fs.writeFileSync(to, code)
@@ -128,8 +128,8 @@ function routerUrl(data, routerStr = `Layout: () => import('@/layout/index'),`) 
     data.forEach(item => {
         routerStr += `'${item.name}': () => import('${item.component}'),
     `
-        if (item.children) {
-            routerUrl(item.children, routerStr)
+        if (item.children && item.children.length !== 0) {
+            routerStr = routerUrl(item.children, routerStr)
         }
     })
     return routerStr
@@ -137,7 +137,7 @@ function routerUrl(data, routerStr = `Layout: () => import('@/layout/index'),`) 
 function routerMaps(routers) {
     const urlCode = routerUrl(routers)
     return `
-  export const routerMaps = {
+  export const routerUrl = {
   ${urlCode}
   }
   `
