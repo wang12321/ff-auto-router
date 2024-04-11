@@ -87,3 +87,7 @@ const autoRouter = require('ff-auto-router/lib/mobile-router-webpack-plugin')
 
 #2.0.0 
 代码压缩版本，自动发布npm，之后只会备注大更新版本信息
+
+
+#3.0.0
+vite 版
