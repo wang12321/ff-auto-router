@@ -172,7 +172,6 @@ function pathMapToMeta(
  * @returns {*}
  */
 function createRoutes(routers) {
-    pathList = ''
     return routers.map(createRoute)
 }
 
@@ -181,11 +180,9 @@ function createRoutes(routers) {
  * @param map
  * @returns {string}
  */
-let pathList = ''
 function createRoute(map) {
     let children
     if (map.children && map.children.length !== 0) {
-        pathList = `/${map.path}`
         children = map.children.map(createRouteZJ)
         if (map.redirect && map.redirect.length > 0) {
             return `\n{
@@ -195,6 +192,7 @@ function createRoute(map) {
       index:${map.index},
       redirect: ${map.redirect},
       alwaysShow: false,
+      component: Layout,
       children:[${children}]
     }`
         }
@@ -204,6 +202,7 @@ function createRoute(map) {
       meta:${map.meta},
       index:${map.index},
       alwaysShow: false,
+      component: Layout,
       children:[${children}]
     }`
     } else {
@@ -226,6 +225,7 @@ function createRoute(map) {
       index:${map.index},
       redirect: ${map.redirect},
       alwaysShow: false,
+      component: Layout,
       children:[${children}]
     }`
         }
@@ -235,6 +235,7 @@ function createRoute(map) {
       meta:${map.meta},
       index:${map.index},
       alwaysShow: false,
+      component: Layout,
       children:[${children}]
     }`
     }
@@ -244,19 +245,15 @@ function createRoute(map) {
  * 二级及以上路由转换
  * @param map json里面的children  子节点里面的path不需要'/'
  * @returns {string}
- * 为了解决带上父级path,暂时使用4级写法，后续优化
  */
-let pathListZ = ''
 function createRouteZJ(map) {
     let children = []
-    pathListZ = ''
     if (map.children) {
-        pathListZ += `/${map.path}`
-        children = map.children.map(createRouteZJz)
+        children = map.children.map(createRouteZJ)
     }
     if (map.component && map.component.length > 0) {
         return `\n{
-    path:'${pathList}${pathListZ}',
+    path:'${map.path}',
     name:'${map.name}',
     meta:${map.meta},
     index:${map.index},
@@ -267,48 +264,7 @@ function createRouteZJ(map) {
         return `[${children}]`
     }
 }
-let pathListZz = ''
-function createRouteZJz(map) {
-    let children = []
-    pathListZz = ''
-    if (map.children) {
-        pathListZz += `/${map.path}`
-        children = map.children.map(createRouteZJzz)
-    }
-    if (map.component && map.component.length > 0) {
-        return `\n{
-    path:'${pathList}${pathListZ}${pathListZz}',
-    name:'${map.name}',
-    meta:${map.meta},
-    index:${map.index},
-    component:() => import('${map.component}'),
-    children:[${children}]
-    }`
-    } else {
-        return `[${children}]`
-    }
-}
-let pathListZzz = ''
-function createRouteZJzz(map) {
-    let children = []
-    pathListZzz = ''
-    if (map.children) {
-        pathListZzz += `/${map.path}`
-        children = map.children.map(createRouteZJzz)
-    }
-    if (map.component && map.component.length > 0) {
-        return `\n{
-    path:'${pathList}${pathListZ}${pathListZz}${pathListZzz}',
-    name:'${map.name}',
-    meta:${map.meta},
-    index:${map.index},
-    component:() => import('${map.component}'),
-    children:[${children}]
-    }`
-    } else {
-        return `[${children}]`
-    }
-}
+
 class AutoRouter {
     constructor(options) {
         // 接收传过来的参数
@@ -333,6 +289,7 @@ class AutoRouter {
                         res.end(
                             prettier.format(
                                 `
+                    import Layout from '/src/layout/index.vue'
               export const routers = [${routes}]
             `,
                                 {
@@ -350,8 +307,10 @@ class AutoRouter {
             },
             load(id) {
                 if (id === virtualFileId) {
+                    console.log('调用了')
                     return prettier.format(
                         `
+                import Layout from '@/layout/index.vue'
           export const routers = [${routes}]
         `,
                         {
