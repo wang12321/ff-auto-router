@@ -126,7 +126,14 @@ function pathMapToMeta(
         if (item && item.value) {
             router.component = importPrefix + '/' + item.value.join('/')
             const file = fs.readFileSync(pages + '/' + item.value.join('/'), 'utf8')
-            const metaArr = file.match(/meta: {[^{]+\}/g) || file.match(/meta:{[^{]+\}/g)
+            let metaArr = null
+
+            if(file.includes('meta:')){
+                metaArr =  file.match(/meta: {[^{]+\}/g) || file.match(/meta:{[^{]+\}/g)
+            }else if(file.includes('meta=')){
+                metaArr = file.match(/meta="{[^{]+\}/g)
+            }
+
             if (metaArr) {
                 const metaStr = metaArr[0]
                 // 匹配meta信息
