@@ -91,3 +91,8 @@ const autoRouter = require('ff-auto-router/lib/mobile-router-webpack-plugin')
 
 #3.0.0
 vite 版
+
+
+#3.0.4  
+解决子菜单只有一个的问题
+

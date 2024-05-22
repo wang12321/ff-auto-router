@@ -217,7 +217,7 @@ function createRoute(map) {
         // 如果只有一级目录，需要单独处理name 不然会报警告name相同
         children = [
             `\n{
-      path:'${map.path}',
+      path:'/${map.path}',
       name:'${map.name}',
       meta:${map.meta},
       index:${map.index},
@@ -227,7 +227,7 @@ function createRoute(map) {
         ]
         if (map.redirect && map.redirect.length > 0) {
             return `\n{
-      path:'/${map.path}',
+      path:'/${map.path}p',
       name:'${map.name}p',
       meta:${map.meta},
       index:${map.index},
@@ -237,7 +237,7 @@ function createRoute(map) {
     }`
         }
         return `\n{
-      path:'/${map.path}',
+      path:'/${map.path}p',
       name:'${map.name}p',
       meta:${map.meta},
       index:${map.index},
