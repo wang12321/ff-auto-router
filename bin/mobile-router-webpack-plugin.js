@@ -73,7 +73,7 @@ class AutoRouter {
  */
 function generateRoutes({ pages = 'src/views', importPrefix = '@/views/', common = 'common' }) {
     // 指定文件不需要生成路由配置
-    const patterns = ['**/*.vue', `!**/${common}/*.vue`]
+    const patterns = ['**/*.vue', `!**/${common}/*.vue`, `!**/${common}/**/*.vue`]
     // 获取所有需要路由配置的文件路径
     const paths = fg.sync(patterns, {
         cwd: pages,
